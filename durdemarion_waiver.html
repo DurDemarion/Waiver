@@ -19,6 +19,8 @@
     </div>
 
     <form id="waiverForm">
+        <input type="hidden" name="waiver_text" id="waiver_text">
+
         <label>Legal Name</label>
         <input type="text" name="legal_name" required>
 
@@ -74,6 +76,7 @@
         const clearBtn = document.getElementById("clearButton");
 
         function resizeCanvas() {
+            document.getElementById('waiver_text').value = document.querySelector("div").innerText;
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             const displayWidth = canvas.offsetWidth;
             const displayHeight = canvas.offsetHeight;
