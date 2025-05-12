@@ -75,7 +75,19 @@
         canvas.getContext("2d").scale(ratio, ratio);
 
         // Clear existing drawing (important to avoid distorted signature)
-        signaturePad.clear();
+        const clearBtn = document.getElementById("clearButton");
+
+function clearSignature() {
+    signaturePad.clear();
+}
+
+// Support both click (desktop) and touchstart (mobile)
+clearBtn.addEventListener("click", clearSignature);
+clearBtn.addEventListener("touchstart", function(e) {
+    e.preventDefault();  // Prevents ghost clicks
+    clearSignature();
+});
+
     }
 
     // Call once and on window resize
