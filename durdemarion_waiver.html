@@ -1,118 +1,107 @@
-<!--
-  Custom Waiver Form with Signature Pad
-  Saves to: Google Sheets + Google Drive (signature as image)
-  To be embedded into Squarespace via Code Block
--->
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dur-Demarion Waiver Form</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 1rem; }
-    canvas { border: 1px solid #ccc; width: 100%; height: 150px; }
-    label { display: block; margin-top: 10px; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-top: 4px; }
-    button { margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
-  </style>
+    <title>Dur-Demarion Waiver Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 8px; margin-top: 4px; }
+        canvas { border: 1px solid #000; margin-top: 10px; touch-action: none; }
+        button { margin-top: 20px; padding: 10px 20px; }
+    </style>
 </head>
 <body>
-  <h1>Dur-Demarion Waiver Form</h1>
-  <form id="waiver-form">
-    <label>Legal Name
-      <input type="text" name="legal_name" required>
-    </label>
-    <label>Field Name (Fighter Name)
-      <input type="text" name="field_name" required>
-    </label>
-    <label>Email
-      <input type="email" name="email" required>
-    </label>
-    <label>Phone
-      <input type="tel" name="phone">
-    </label>
-    <label>Emergency Contact Name
-      <input type="text" name="emergency_contact_name">
-    </label>
-    <label>Emergency Contact Phone
-      <input type="tel" name="emergency_contact_phone">
-    </label>
-    <label>Medical Conditions / Allergies
-      <textarea name="medical" required>N/A</textarea>
-    </label>
+    <h2>Dur-Demarion Medieval Combat Society Waiver</h2>
+    <p>Please read the waiver below and complete all required fields.</p>
+    <div style="border: 1px solid #aaa; padding: 15px; margin-bottom: 20px; height: 200px; overflow-y: scroll;">
+        <p>[Full waiver text goes here — you can paste the real text in this section]</p>
+    </div>
 
-    <label>Draw your signature below:</label>
-    <canvas id="signature-pad" width="400" height="150"></canvas>
-    <button type="button" id="clear-signature">Clear Signature</button>
+    <form id="waiverForm">
+        <label>Legal Name</label>
+        <input type="text" name="legal_name" required>
 
-    <input type="hidden" name="signature_data" id="signature-data">
-    <button type="submit">Submit Waiver</button>
-  </form>
+        <label>Field Name</label>
+        <input type="text" name="field_name" required>
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script>
-    const canvas = document.getElementById('signature-pad');
-    const signaturePad = new SignaturePad(canvas);
-    const clearBtn = document.getElementById("clearButton");
+        <label>Email</label>
+        <input type="email" name="email" required>
 
-    function resizeCanvas() {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        const displayWidth = canvas.offsetWidth;
-        const displayHeight = canvas.offsetHeight;
-        canvas.width = displayWidth * ratio;
-        canvas.height = displayHeight * ratio;
-        canvas.style.width = displayWidth + "px";
-        canvas.style.height = displayHeight + "px";
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear();
-    }
+        <label>Phone</label>
+        <input type="tel" name="phone" required>
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+        <label>Address Line 1</label>
+        <input type="text" name="address1" required>
 
-    clearBtn.addEventListener("pointerdown", function(e) {
-        e.preventDefault();
-        signaturePad.clear();
-    });
+        <label>Address Line 2</label>
+        <input type="text" name="address2">
 
-    document.getElementById('waiverForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (signaturePad.isEmpty()) {
-            alert("Please sign the waiver before submitting.");
-            return;
+        <label>City</label>
+        <input type="text" name="city" required>
+
+        <label>State</label>
+        <input type="text" name="state" required>
+
+        <label>ZIP Code</label>
+        <input type="text" name="zip" required>
+
+        <label>Country</label>
+        <input type="text" name="country" required>
+
+        <label>Emergency Contact Name</label>
+        <input type="text" name="emergency_name" required>
+
+        <label>Emergency Contact Phone</label>
+        <input type="tel" name="emergency_phone" required>
+
+        <label>Medical Conditions or Allergies</label>
+        <textarea name="medical" required></textarea>
+
+        <label>Signature</label>
+        <canvas id="signature-pad" width="400" height="150"></canvas>
+        <button type="button" id="clearButton">Clear Signature</button>
+
+        <input type="hidden" name="signature" id="signature">
+
+        <button type="submit">Submit Waiver</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        const canvas = document.getElementById('signature-pad');
+        const signaturePad = new SignaturePad(canvas);
+        const clearBtn = document.getElementById("clearButton");
+
+        function resizeCanvas() {
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
+            const displayWidth = canvas.offsetWidth;
+            const displayHeight = canvas.offsetHeight;
+            canvas.width = displayWidth * ratio;
+            canvas.height = displayHeight * ratio;
+            canvas.style.width = displayWidth + "px";
+            canvas.style.height = displayHeight + "px";
+            canvas.getContext("2d").scale(ratio, ratio);
+            signaturePad.clear();
         }
-        document.getElementById('signature').value = signaturePad.toDataURL();
-        alert("Signature captured. Ready for backend hookup!");
-    });
-</script>
 
-// Support both click (desktop) and touchstart (mobile)
-clearBtn.addEventListener("click", clearSignature);
-clearBtn.addEventListener("touchstart", function(e) {
-    e.preventDefault();  // Prevents ghost clicks
-    clearSignature();
-});
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
 
-    }
+        clearBtn.addEventListener("pointerdown", function(e) {
+            e.preventDefault();
+            signaturePad.clear();
+        });
 
-    // Call once and on window resize
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    function clearSignature() {
-        signaturePad.clear();
-    }
-
-    document.getElementById('waiverForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (signaturePad.isEmpty()) {
-            alert("Please sign the waiver before submitting.");
-            return;
-        }
-        document.getElementById('signature').value = signaturePad.toDataURL();
-        alert("Signature captured. Ready for backend hookup!");
-    });
-</script>
+        document.getElementById('waiverForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (signaturePad.isEmpty()) {
+                alert("Please sign the waiver before submitting.");
+                return;
+            }
+            document.getElementById('signature').value = signaturePad.toDataURL();
+            alert("Signature captured. Ready for backend hookup!");
+        });
+    </script>
 </body>
 </html>
