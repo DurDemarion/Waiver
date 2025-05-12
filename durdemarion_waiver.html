@@ -50,35 +50,43 @@
     <button type="submit">Submit Waiver</button>
   </form>
 
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script>
     const canvas = document.getElementById('signature-pad');
     const signaturePad = new SignaturePad(canvas);
+    const clearBtn = document.getElementById("clearButton");
 
     function resizeCanvas() {
-        // Get the ratio based on the device
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
-        // Store original display dimensions
         const displayWidth = canvas.offsetWidth;
         const displayHeight = canvas.offsetHeight;
-
-        // Resize the actual canvas
         canvas.width = displayWidth * ratio;
         canvas.height = displayHeight * ratio;
-
-        // Style it back to match CSS layout size
         canvas.style.width = displayWidth + "px";
         canvas.style.height = displayHeight + "px";
-
-        // Scale the drawing context to handle higher pixel ratios
         canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear();
+    }
 
-        // Clear existing drawing (important to avoid distorted signature)
-        const clearBtn = document.getElementById("clearButton");
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-function clearSignature() {
-    signaturePad.clear();
+    // Clear signature on any input device (mouse, touch, stylus)
+    clearBtn.addEventListener("pointerdown", function(e) {
+        e.preventDefault();
+        signaturePad.clear();
+    });
+
+    document.getElementById('waiverForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (signaturePad.isEmpty()) {
+            alert("Please sign the waiver before submitting.");
+            return;
+        }
+        document.getElementById('signature').value = signaturePad.toDataURL();
+        alert("Signature captured. Backend connection is the next step.");
+    });
+</script>
+
 }
 
 // Support both click (desktop) and touchstart (mobile)
