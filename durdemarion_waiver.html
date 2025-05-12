@@ -50,40 +50,34 @@
     <button type="submit">Submit Waiver</button>
   </form>
 
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script>
     const canvas = document.getElementById('signature-pad');
     const signaturePad = new SignaturePad(canvas);
-    const clearBtn = document.getElementById('clear-signature');
-    const form = document.getElementById('waiver-form');
 
-    clearBtn.addEventListener('click', () => signaturePad.clear());
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // Otherwise isEmpty() might return false
+    }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (signaturePad.isEmpty()) {
-        alert('Please sign before submitting.');
-        return;
-      }
-      document.getElementById('signature-data').value = signaturePad.toDataURL();
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-      const formData = new FormData(form);
-      const obj = {};
-      formData.forEach((v, k) => obj[k] = v);
-
-      const response = await fetch('YOUR_WEB_APP_URL_HERE', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(obj)
-      });
-
-      if (response.ok) {
-        alert('Waiver submitted successfully!');
-        form.reset();
+    function clearSignature() {
         signaturePad.clear();
-      } else {
-        alert('There was an error submitting the form.');
-      }
+    }
+
+    document.getElementById('waiverForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (signaturePad.isEmpty()) {
+            alert("Please sign the waiver before submitting.");
+            return;
+        }
+        document.getElementById('signature').value = signaturePad.toDataURL();
+        alert("Signature captured. Backend connection is the next step.");
     });
   </script>
 </body>
