@@ -56,13 +56,29 @@
     const signaturePad = new SignaturePad(canvas);
 
     function resizeCanvas() {
+        // Get the ratio based on the device
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
+
+        // Store original display dimensions
+        const displayWidth = canvas.offsetWidth;
+        const displayHeight = canvas.offsetHeight;
+
+        // Resize the actual canvas
+        canvas.width = displayWidth * ratio;
+        canvas.height = displayHeight * ratio;
+
+        // Style it back to match CSS layout size
+        canvas.style.width = displayWidth + "px";
+        canvas.style.height = displayHeight + "px";
+
+        // Scale the drawing context to handle higher pixel ratios
         canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); // Otherwise isEmpty() might return false
+
+        // Clear existing drawing (important to avoid distorted signature)
+        signaturePad.clear();
     }
 
+    // Call once and on window resize
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
@@ -77,8 +93,8 @@
             return;
         }
         document.getElementById('signature').value = signaturePad.toDataURL();
-        alert("Signature captured. Backend connection is the next step.");
+        alert("Signature captured. Ready for backend hookup!");
     });
-  </script>
+</script>
 </body>
 </html>
