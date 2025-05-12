@@ -12,15 +12,13 @@
     </style>
 </head>
 <body>
-    <h2>Dur-Demarion Medieval Combat Society Waiver2</h2>
+    <h2>Dur-Demarion Medieval Combat Society Waiver5</h2>
     <p>Please read the waiver below and complete all required fields.</p>
-    <div style="border: 1px solid #aaa; padding: 15px; margin-bottom: 20px; height: 200px; overflow-y: scroll;">
+    <div id="waiverTextBlock" style="border: 1px solid #aaa; padding: 15px; margin-bottom: 20px; height: 200px; overflow-y: scroll;">
         <p>[Full waiver text goes here — you can paste the real text in this section]</p>
     </div>
 
     <form id="waiverForm">
-        <input type="hidden" name="waiver_text" id="waiver_text">
-
         <label>Legal Name</label>
         <input type="text" name="legal_name" required>
 
@@ -65,6 +63,7 @@
         <button type="button" id="clearButton">Clear Signature</button>
 
         <input type="hidden" name="signature" id="signature">
+        <input type="hidden" name="waiver_text" id="waiver_text">
 
         <button type="submit">Submit Waiver</button>
     </form>
@@ -74,9 +73,9 @@
         const canvas = document.getElementById('signature-pad');
         const signaturePad = new SignaturePad(canvas);
         const clearBtn = document.getElementById("clearButton");
+        const waiverText = document.getElementById("waiver_text");
 
         function resizeCanvas() {
-            document.getElementById('waiver_text').value = document.querySelector("div").innerText;
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
             const displayWidth = canvas.offsetWidth;
             const displayHeight = canvas.offsetHeight;
@@ -96,38 +95,38 @@
             signaturePad.clear();
         });
 
-   form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    if (signaturePad.isEmpty()) {
-        alert("Please sign the waiver before submitting.");
-        return;
-    }
-    document.getElementById('signature').value = signaturePad.toDataURL();
+        document.getElementById('waiverForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (signaturePad.isEmpty()) {
+                alert("Please sign the waiver before submitting.");
+                return;
+            }
 
-    const formData = new FormData(form);
-    const data = {};
-    formData.forEach((value, key) => { data[key] = value; });
-
-    fetch("https://script.google.com/macros/s/AKfycbx4mnB8Bz4k-l3JQtp351Na9E02fOaaMNeFZ-MwROxdNlzF8UFMFushjyvVWBPgCcDYmQ/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-    .then(res => res.text())
-    .then(response => {
-        alert("Waiver submitted successfully!");
-        form.reset();
-        signaturePad.clear();
-    })
-    .catch(error => {
-        alert("Error submitting waiver. Please try again.");
-        console.error("Error:", error);
-    });
-});
+            // Set values before submitting
             document.getElementById('signature').value = signaturePad.toDataURL();
-            alert("Signature captured. Ready for backend hookup!");
+            document.getElementById('waiver_text').value = document.getElementById("waiverTextBlock").innerText;
+
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => { data[key] = value; });
+
+            fetch("YOUR_WEB_APP_URL_HERE", {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.text())
+            .then(response => {
+                alert("Waiver submitted successfully!");
+                document.getElementById('waiverForm').reset();
+                signaturePad.clear();
+            })
+            .catch(error => {
+                alert("Error submitting waiver. Please try again.");
+                console.error("Error:", error);
+            });
         });
     </script>
 </body>
