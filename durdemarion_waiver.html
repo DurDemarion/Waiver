@@ -1,0 +1,90 @@
+<!--
+  Custom Waiver Form with Signature Pad
+  Saves to: Google Sheets + Google Drive (signature as image)
+  To be embedded into Squarespace via Code Block
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dur-Demarion Waiver Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; }
+    canvas { border: 1px solid #ccc; width: 100%; height: 150px; }
+    label { display: block; margin-top: 10px; }
+    input, textarea { width: 100%; padding: 0.5rem; margin-top: 4px; }
+    button { margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Dur-Demarion Waiver Form</h1>
+  <form id="waiver-form">
+    <label>Legal Name
+      <input type="text" name="legal_name" required>
+    </label>
+    <label>Field Name (Fighter Name)
+      <input type="text" name="field_name" required>
+    </label>
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Phone
+      <input type="tel" name="phone">
+    </label>
+    <label>Emergency Contact Name
+      <input type="text" name="emergency_contact_name">
+    </label>
+    <label>Emergency Contact Phone
+      <input type="tel" name="emergency_contact_phone">
+    </label>
+    <label>Medical Conditions / Allergies
+      <textarea name="medical" required>N/A</textarea>
+    </label>
+
+    <label>Draw your signature below:</label>
+    <canvas id="signature-pad" width="400" height="150"></canvas>
+    <button type="button" id="clear-signature">Clear Signature</button>
+
+    <input type="hidden" name="signature_data" id="signature-data">
+    <button type="submit">Submit Waiver</button>
+  </form>
+
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+  <script>
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas);
+    const clearBtn = document.getElementById('clear-signature');
+    const form = document.getElementById('waiver-form');
+
+    clearBtn.addEventListener('click', () => signaturePad.clear());
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (signaturePad.isEmpty()) {
+        alert('Please sign before submitting.');
+        return;
+      }
+      document.getElementById('signature-data').value = signaturePad.toDataURL();
+
+      const formData = new FormData(form);
+      const obj = {};
+      formData.forEach((v, k) => obj[k] = v);
+
+      const response = await fetch('YOUR_WEB_APP_URL_HERE', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj)
+      });
+
+      if (response.ok) {
+        alert('Waiver submitted successfully!');
+        form.reset();
+        signaturePad.clear();
+      } else {
+        alert('There was an error submitting the form.');
+      }
+    });
+  </script>
+</body>
+</html>
